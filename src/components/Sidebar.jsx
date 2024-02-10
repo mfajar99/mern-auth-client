@@ -1,32 +1,48 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { IoPerson, IoPricetag, IoHome, IoLogOut } from 'react-icons/io5'
+import { useDispatch, useSelector } from 'react-redux'
+import { logOut, reset } from '../features/authSlice';
 
 const Sidebar = () => {
-   return (
-      <aside className="menu pl-2 has-shadow">
-         <p className="menu-label">
-            General
-         </p>
-         <ul className="menu-list">
-            <li><NavLink to={"/dashboard"}><IoHome /> Dashboard</NavLink></li>
-            <li><NavLink to={"/products"}><IoPricetag /> Products</NavLink></li>
-         </ul>
-         <p className="menu-label">
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  // eslint-disable-next-line no-unused-vars
+  const { user } = useSelector((state) => state.auth)
+
+  const logout = () => {
+    dispatch(logOut())
+    dispatch(reset())
+    navigate("/")
+  }
+
+  return (
+    <aside className="menu pl-2 has-shadow">
+      <p className="menu-label">
+        General
+      </p>
+      <ul className="menu-list">
+        <li><NavLink to={"/dashboard"}><IoHome /> Dashboard</NavLink></li>
+        <li><NavLink to={"/products"}><IoPricetag /> Products</NavLink></li>
+      </ul>
+      {user && user.role === "admin" && (
+        <div>
+          <p className="menu-label">
             Admin
-         </p>
-         <ul className="menu-list">
+          </p>
+          <ul className="menu-list">
             <li><NavLink to={"/users"}><IoPerson /> Users</NavLink></li>
-         </ul>
-         <p className="menu-label">
-            Settings
-         </p>
-         <ul className="menu-list">
-            <button className='button is-white'><IoLogOut /> Logout</button>
-         </ul>
-      </aside>
-   )
+          </ul>
+        </div>
+      )}
+      <p className="menu-label">
+        Settings
+      </p>
+      <ul className="menu-list">
+        <button onClick={logout} className='button is-white'><IoLogOut /> Logout</button>
+      </ul>
+    </aside>
+  )
 }
 
 export default Sidebar
